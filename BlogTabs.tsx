@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { AllBlogsType } from '@/lib/types/blog.type';
+import { AllBlogsType } from '@/lib/types/explore.type';
 
 interface BlogTabsProps {
   blogtabsname: AllBlogsType[];
@@ -49,6 +49,10 @@ export default function BlogTabs({ blogtabsname, onClick, activeTabSlug }: BlogT
       scrollToActiveTab(activeTab);
     }
   }, [activeTab]);
+
+  if (!blogtabsname || blogtabsname.length === 0) {
+    return null;
+  }
 
   return (
     <div className="w-full">
