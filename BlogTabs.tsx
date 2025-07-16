@@ -6,7 +6,7 @@ import { AllBlogsType } from '@/lib/types/blog.type';
 
 interface BlogTabsProps {
   blogtabsname: AllBlogsType[];
-  onClick: (blogtab: AllBlogsType) => void;
+  onClick: (selectedBlog: AllBlogsType) => void;
   activeTabSlug?: string;
 }
 
@@ -18,14 +18,14 @@ export default function BlogTabs({ blogtabsname, onClick, activeTabSlug }: BlogT
 
   // Update local state when parent changes activeTabSlug
   useEffect(() => {
-    if (activeTabSlug) {
+    if (activeTabSlug && activeTabSlug !== activeTab) {
       setActiveTab(activeTabSlug);
     }
-  }, [activeTabSlug]);
+  }, [activeTabSlug, activeTab]);
 
-  const handleClick = (data: AllBlogsType) => {
-    setActiveTab(data.slug);
-    onClick(data);
+  const handleTabClick = (blogItem: AllBlogsType) => {
+    setActiveTab(blogItem.slug);
+    onClick(blogItem);
   };
 
   const scrollToActiveTab = (tabSlug: string) => {
@@ -45,7 +45,9 @@ export default function BlogTabs({ blogtabsname, onClick, activeTabSlug }: BlogT
   };
 
   useEffect(() => {
-    scrollToActiveTab(activeTab);
+    if (activeTab) {
+      scrollToActiveTab(activeTab);
+    }
   }, [activeTab]);
 
   return (
@@ -54,18 +56,18 @@ export default function BlogTabs({ blogtabsname, onClick, activeTabSlug }: BlogT
         ref={scrollContainerRef}
         className="flex overflow-x-auto gap-2 p-2 rounded-l-full scrollbar-hide"
       >
-        {blogtabsname.map(item => (
+        {blogtabsname.map((blogCategory: AllBlogsType) => (
           <Button
-            key={item.slug}
-            data-tab-slug={item.slug}
-            onClick={() => handleClick(item)}
+            key={blogCategory.slug}
+            data-tab-slug={blogCategory.slug}
+            onClick={() => handleTabClick(blogCategory)}
             className={`px-4 py-2 text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all duration-200 ${
-              activeTab === item.slug
+              activeTab === blogCategory.slug
                 ? 'bg-gray-300 text-gray-900 hover:bg-gray-200 rounded-l-lg'
                 : 'bg-transparent text-white hover:bg-gray-700/50'
             }`}
           >
-            {item.name}
+            {blogCategory.name}
           </Button>
         ))}
       </div>

@@ -12,8 +12,8 @@ interface BlogDetailsPageProps {
 const BlogDetailsPage: React.FC<BlogDetailsPageProps> = ({ data }) => {
     const [activeTab, setActiveTab] = useState<AllBlogsType>(data[0]);
     
-    const handleTabClick = (blogtab: AllBlogsType) => {
-        setActiveTab(blogtab);
+    const handleTabClick = (selectedBlog: AllBlogsType): void => {
+        setActiveTab(selectedBlog);
     };
 
     return (
