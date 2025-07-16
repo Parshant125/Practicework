@@ -19,7 +19,12 @@ const urlMappingConfig = {
       withId: '/blogs/{id}',
       withCategory: '/blogs/category/{category}',
       default: '/blogs/article/{index}'
-    }
+    },
+    propertyMappings: [
+      { property: 'slug', pattern: 'withSlug' },
+      { property: 'id', pattern: 'withId' },
+      { property: 'category', pattern: 'withCategory' }
+    ]
   },
   offers: {
     baseUrl: '/offers',
@@ -29,7 +34,13 @@ const urlMappingConfig = {
       withType: '/offers/{type}',
       withDiscount: '/offers/discount/{discount}',
       default: '/offers/deal/{index}'
-    }
+    },
+    propertyMappings: [
+      { property: 'slug', pattern: 'withSlug' },
+      { property: 'id', pattern: 'withId' },
+      { property: 'discount', pattern: 'withDiscount' },
+      { property: 'type', pattern: 'withType' }
+    ]
   },
   packages: {
     baseUrl: '/destinations',
@@ -39,7 +50,13 @@ const urlMappingConfig = {
       withDestination: '/destinations/{destination}/packages',
       withDuration: '/destinations/packages/{duration}-days',
       default: '/destinations/packages/tour-{index}'
-    }
+    },
+    propertyMappings: [
+      { property: 'slug', pattern: 'withSlug' },
+      { property: 'id', pattern: 'withId' },
+      { property: 'destination', pattern: 'withDestination' },
+      { property: 'duration', pattern: 'withDuration' }
+    ]
   },
   destinations: {
     baseUrl: '/destinations',
@@ -49,7 +66,13 @@ const urlMappingConfig = {
       withCountry: '/destinations/{country}',
       withRegion: '/destinations/region/{region}',
       default: '/destinations/place-{index}'
-    }
+    },
+    propertyMappings: [
+      { property: 'slug', pattern: 'withSlug' },
+      { property: 'id', pattern: 'withId' },
+      { property: 'country', pattern: 'withCountry' },
+      { property: 'region', pattern: 'withRegion' }
+    ]
   },
   testimonials: {
     baseUrl: '/testimonials',
@@ -59,7 +82,13 @@ const urlMappingConfig = {
       withRating: '/testimonials/rating/{rating}-star',
       withCustomer: '/testimonials/customer/{customer}',
       default: '/testimonials/review-{index}'
-    }
+    },
+    propertyMappings: [
+      { property: 'slug', pattern: 'withSlug' },
+      { property: 'id', pattern: 'withId' },
+      { property: 'rating', pattern: 'withRating' },
+      { property: 'customer', pattern: 'withCustomer' }
+    ]
   },
   themes: {
     baseUrl: '/themes',
@@ -69,81 +98,33 @@ const urlMappingConfig = {
       withCategory: '/themes/{category}',
       withType: '/themes/type/{type}',
       default: '/themes/theme-{index}'
-    }
+    },
+    propertyMappings: [
+      { property: 'slug', pattern: 'withSlug' },
+      { property: 'id', pattern: 'withId' },
+      { property: 'category', pattern: 'withCategory' },
+      { property: 'type', pattern: 'withType' }
+    ]
   }
 };
 
-// Function to generate URLs using mapping
+// Function to generate URLs using mapping only
 const generateMappedUrl = (sectionType: string, item: any, index: number): string => {
   const config = urlMappingConfig[sectionType];
   if (!config) return '/';
 
-  const patterns = config.patterns;
+  const { patterns, propertyMappings } = config;
 
-  // Priority-based URL generation
-  if (item.slug) {
-    return patterns.withSlug.replace('{slug}', item.slug);
-  }
-  
-  if (item.id) {
-    return patterns.withId.replace('{id}', item.id);
-  }
-
-  // Section-specific mapping
-  switch (sectionType) {
-    case 'blogs':
-      if (item.category) {
-        return patterns.withCategory.replace('{category}', item.category);
-      }
-      break;
-      
-    case 'offers':
-      if (item.discount) {
-        return patterns.withDiscount.replace('{discount}', item.discount);
-      }
-      if (item.type) {
-        return patterns.withType.replace('{type}', item.type);
-      }
-      break;
-      
-    case 'packages':
-      if (item.destination) {
-        return patterns.withDestination.replace('{destination}', item.destination);
-      }
-      if (item.duration) {
-        return patterns.withDuration.replace('{duration}', item.duration);
-      }
-      break;
-      
-    case 'destinations':
-      if (item.country) {
-        return patterns.withCountry.replace('{country}', item.country);
-      }
-      if (item.region) {
-        return patterns.withRegion.replace('{region}', item.region);
-      }
-      break;
-      
-    case 'testimonials':
-      if (item.rating) {
-        return patterns.withRating.replace('{rating}', item.rating);
-      }
-      if (item.customer) {
-        return patterns.withCustomer.replace('{customer}', item.customer);
-      }
-      break;
-      
-    case 'themes':
-      if (item.category) {
-        return patterns.withCategory.replace('{category}', item.category);
-      }
-      if (item.type) {
-        return patterns.withType.replace('{type}', item.type);
-      }
-      break;
+  // Iterate through property mappings to find first match
+  for (const mapping of propertyMappings) {
+    const propertyValue = item[mapping.property];
+    if (propertyValue) {
+      const pattern = patterns[mapping.pattern];
+      return pattern.replace(`{${mapping.property}}`, propertyValue);
+    }
   }
 
-  // Default pattern
+  // Fallback to default pattern
   return patterns.default.replace('{index}', (index + 1).toString());
 };
 
