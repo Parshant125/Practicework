@@ -10,23 +10,16 @@ import DestinationCardComponent from '@/components/cards/destination_card';
 import ViewMoreCTA from '@/components/organisms/Explore/ViewMoreCTA';
 import { SectionContent } from '@/lib/types/explore.type';
 
-const sectionUrlMap: Record<string, string> = {
-  blogs: '/blogs',
-  offers: '/offers',
-  packages: '/destinations',
-  destinations: '/destinations',
-  testimonials: '/testimonials',
-  themes: '/themes',
-};
-
 interface SectionWithoutTabsProps {
   content: SectionContent;
   viewMoreText: string;
+  slug?: string;
 }
 
 const SectionWithoutTabs: React.FC<SectionWithoutTabsProps> = ({
   content,
   viewMoreText,
+  slug,
 }) => {
   const sectionTypes = ['themes', 'destinations', 'testimonials', 'offers', 'blogs', 'packages'];
   const keys: string[] = Object.keys(content);
@@ -42,7 +35,27 @@ const SectionWithoutTabs: React.FC<SectionWithoutTabsProps> = ({
     return null;
   }
 
-  const viewMoreUrl = sectionUrlMap[matchedSectionType] || '/';
+  // Create URL mapping with dynamic slug for destinations
+  const getViewMoreUrl = (sectionType: string): string => {
+    switch (sectionType) {
+      case 'blogs':
+        return '/blogs';
+      case 'offers':
+        return '/offers';
+      case 'packages':
+        return '/destinations';
+      case 'destinations':
+        return slug ? `explore/page-details/${slug}` : '/destinations';
+      case 'testimonials':
+        return '/testimonials';
+      case 'themes':
+        return '/themes';
+      default:
+        return '/';
+    }
+  };
+
+  const viewMoreUrl = getViewMoreUrl(matchedSectionType);
 
   const renderItem = (item: any, index: number) => {
     // Use item.id or item.slug as key if available, otherwise fall back to index
